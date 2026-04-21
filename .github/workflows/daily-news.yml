@@ -9,8 +9,9 @@ jobs:
   send-news:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -22,7 +23,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Run news subscription
+      - name: Run news script
         env:
           NEWSAPI_KEY: ${{ secrets.NEWSAPI_KEY }}
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
@@ -32,12 +33,3 @@ jobs:
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           KEYWORDS: ${{ secrets.KEYWORDS }}
         run: python main.py
-
-      - name: Commit and push changes
-        if: always()
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          git commit -m "News subscription run" || true
-          git push
